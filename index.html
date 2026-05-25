@@ -10,6 +10,9 @@
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -26,20 +29,37 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg: #0f1117;
-  --bg2: #181c27;
-  --bg3: #1e2336;
-  --card: #1a1f2e;
-  --border: #2a3050;
-  --accent: #4f8ef7;
-  --accent2: #34d399;
-  --accent3: #f59e0b;
-  --danger: #ef4444;
-  --text: #e2e8f0;
-  --text2: #94a3b8;
+  --bg: #f6f8fb;
+  --bg2: #ffffff;
+  --bg3: #eef3f8;
+  --card: #ffffff;
+  --border: #d9e2ec;
+  --accent: #2563eb;
+  --accent2: #059669;
+  --accent3: #d97706;
+  --danger: #dc2626;
+  --text: #1e293b;
+  --text2: #475569;
   --text3: #64748b;
   --radius: 10px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --shadow: 0 2px 12px rgba(15,23,42,0.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --bg2: #111827;
+    --bg3: #1e293b;
+    --card: #111827;
+    --border: #334155;
+    --accent: #60a5fa;
+    --accent2: #34d399;
+    --accent3: #fbbf24;
+    --danger: #f87171;
+    --text: #f8fafc;
+    --text2: #cbd5e1;
+    --text3: #94a3b8;
+    --shadow: 0 2px 14px rgba(0,0,0,0.35);
+  }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -96,7 +116,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 /* MAP */
 .map-wrapper { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; }
 #map { height: 520px; width: 100%; }
-.map-legend { position: absolute; bottom: 16px; left: 16px; background: rgba(15,17,23,0.92); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; z-index: 1000; font-size: 12px; }
+.map-legend { position: absolute; bottom: 16px; left: 16px; background: color-mix(in srgb, var(--bg2) 94%, transparent); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; z-index: 1000; font-size: 12px; box-shadow: var(--shadow); }
 .legend-item { display: flex; align-items: center; gap: 8px; padding: 2px 0; color: var(--text2); }
 .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 .map-controls { display: flex; gap: 8px; padding: 12px; flex-wrap: wrap; background: var(--bg2); border-bottom: 1px solid var(--border); }
@@ -181,7 +201,7 @@ tr:hover td { background: rgba(79,142,247,0.04); }
 .geocode-done { background: rgba(52,211,153,0.1); color: var(--accent2); }
 
 /* LOADING */
-.loading-overlay { position: absolute; inset: 0; background: rgba(15,17,23,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; border-radius: var(--radius); display: none; }
+.loading-overlay { position: absolute; inset: 0; background: color-mix(in srgb, var(--bg2) 85%, transparent); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; border-radius: var(--radius); display: none; }
 .loading-overlay.show { display: flex; }
 .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -213,6 +233,19 @@ tr:hover td { background: rgba(79,142,247,0.04); }
 .anon-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); cursor: pointer; }
 .anon-toggle input { accent-color: var(--accent); }
 
+/* VALE-TRANSPORTE INFO */
+.vt-info-panel { display: flex; flex-direction: column; gap: 12px; }
+.vt-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.vt-metric-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-height: 82px; }
+.vt-metric-card.full { grid-column: 1 / -1; }
+.vt-metric-label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.35px; margin-bottom: 7px; }
+.vt-metric-value { font-size: 24px; line-height: 1; font-weight: 700; color: var(--text); }
+.vt-metric-sub { font-size: 11px; color: var(--text2); margin-top: 5px; line-height: 1.35; }
+.vt-progress { height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 9px; }
+.vt-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; transition: width 0.3s; }
+.vt-badge { display: inline-flex; align-items: center; gap: 5px; width: fit-content; border-radius: 999px; padding: 4px 9px; font-size: 11px; font-weight: 600; background: rgba(37,99,235,0.10); color: var(--accent); border: 1px solid rgba(37,99,235,0.20); }
+.vt-alert { background: rgba(100,116,139,0.12); border: 1px solid var(--border); color: var(--text2); border-radius: 8px; padding: 10px 12px; font-size: 12px; line-height: 1.4; }
+
 /* TABS */
 .tabs { display: flex; gap: 4px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .tab-btn { background: none; border: none; color: var(--text3); font-size: 13px; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
@@ -225,18 +258,33 @@ tr:hover td { background: rgba(79,142,247,0.04); }
 
 /* DRE REAL GEOJSON */
 .dre-map-label {
-  background: rgba(15,17,23,0.72);
-  border: 1px solid rgba(255,255,255,0.28);
-  color: #f8fafc;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  background: color-mix(in srgb, var(--bg2) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(15,23,42,0.18);
   border-radius: 6px;
   padding: 2px 5px;
   font-weight: 700;
   font-size: 10px;
   text-align: center;
-  text-shadow: 0 1px 2px #000;
+  text-shadow: none;
 }
 .dre-map-label::before { display: none; }
+
+.leaflet-container { background: var(--bg3); }
+.leaflet-control-zoom a,
+.leaflet-control-attribution {
+  background: var(--bg2) !important;
+  color: var(--text2) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-control-zoom a:hover { background: var(--bg3) !important; color: var(--text) !important; }
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
 
 </style>
 </head>
@@ -526,6 +574,16 @@ tr:hover td { background: rgba(79,142,247,0.04); }
       <div class="sidebar-card-header">Cozinheiras por DRE</div>
       <div class="sidebar-card-body">
         <div class="chart-container" style="height:200px"><canvas id="chartDre"></canvas></div>
+      </div>
+    </div>
+
+    <!-- VALE-TRANSPORTE -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">Vale-transporte das cozinheiras</div>
+      <div class="sidebar-card-body">
+        <div class="vt-info-panel" id="valeTransporteInfo">
+          <div class="vt-alert">Informação sobre vale-transporte não disponível na base enviada.</div>
+        </div>
       </div>
     </div>
 
@@ -29212,10 +29270,35 @@ map.setMaxBounds(SP_BOUNDS);
 map.options.maxBoundsViscosity = 1.0;
 map.setView(SP_CENTER, 10);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© CartoDB', minZoom: 9, maxZoom: 16, subdomains: 'abcd',
-  keepBuffer: 4
-}).addTo(map);
+const MAP_TILE_THEMES = {
+  light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+};
+let baseTileLayer = null;
+
+function getSystemMapTheme() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applySystemMapTheme() {
+  const theme = getSystemMapTheme();
+  if (baseTileLayer) map.removeLayer(baseTileLayer);
+  baseTileLayer = L.tileLayer(MAP_TILE_THEMES[theme], {
+    attribution: '© CartoDB', minZoom: 9, maxZoom: 16, subdomains: 'abcd',
+    keepBuffer: 4
+  }).addTo(map);
+}
+
+applySystemMapTheme();
+
+if (window.matchMedia) {
+  const mapThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mapThemeMedia.addEventListener) {
+    mapThemeMedia.addEventListener('change', applySystemMapTheme);
+  } else if (mapThemeMedia.addListener) {
+    mapThemeMedia.addListener(applySystemMapTheme);
+  }
+}
 
 // Cluster group for cozinheiras
 const cozCluster = L.markerClusterGroup({ maxClusterRadius: 40, spiderfyOnMaxZoom: true });
@@ -29487,6 +29570,11 @@ function syncExpectedDataShape(row) {
   row.longitudeUnidade = hasValidCoordinatePair(latUnidade, lngUnidade) ? Number(lngUnidade) : null;
   row.distanciaKmResidenciaUnidade = typeof distUnidade === 'number' ? distUnidade : null;
   row.origemRegistro = row.origem_registro || (row.inclusao_manual ? 'manual' : 'excel');
+  if (typeof row.vale_transporte_disponivel !== 'boolean') row.vale_transporte_disponivel = false;
+  if (typeof row.utiliza_vale_transporte !== 'boolean') row.utiliza_vale_transporte = null;
+  if (typeof row.integracao_disponivel !== 'boolean') row.integracao_disponivel = typeof row.percentual_integracao === 'number';
+  if (typeof row.utiliza_integracao !== 'boolean') row.utiliza_integracao = null;
+  row.percentual_integracao = typeof row.percentual_integracao === 'number' ? row.percentual_integracao : null;
   return row;
 }
 
@@ -29614,7 +29702,10 @@ const COLUMN_ALIASES = {
   estado: ['estado','uf'],
   cep: ['cep','codigo postal','código postal'],
   dre: ['dre','diretoria','diretoria regional','dre de atuacao','dre de atuação','dre subordinada','diretoria regional de educacao','diretoria regional de educação','coluna2'],
-  endereco_escola: ['endereco da unidade educacional','endereço da unidade educacional','endereco unidade educacional','endereço unidade educacional','endereco da escola','endereço da escola','endereco da unidade','endereço da unidade','endereco unidade','endereço unidade','endereco ue','endereço ue','logradouro da escola','logradouro escola','logradouro unidade','localizacao da escola','localização da escola','endereco do local','endereço do local']
+  endereco_escola: ['endereco da unidade educacional','endereço da unidade educacional','endereco unidade educacional','endereço unidade educacional','endereco da escola','endereço da escola','endereco da unidade','endereço da unidade','endereco unidade','endereço unidade','endereco ue','endereço ue','logradouro da escola','logradouro escola','logradouro unidade','localizacao da escola','localização da escola','endereco do local','endereço do local'],
+  vale_transporte: ['vale transporte','vale-transporte','vt','usa vale transporte','utiliza vale transporte','uso de vale transporte','uso de vt','usa vt','utiliza vt'],
+  integracao: ['integração','integracao','utiliza integração','utiliza integracao','usa integração','usa integracao','bilhete integrado','transporte integrado','integração vt','integracao vt'],
+  percentual_integracao: ['percentual integração','percentual integracao','porcentagem integração','porcentagem integracao','% integração','% integracao','percentual que utiliza integração','percentual que utiliza integracao']
 };
 
 const EMPRESA_SIGNATURES = {
@@ -29878,6 +29969,34 @@ function normalizeFilhos(v) {
   return { quantidade_filhos: 'não informado', filhos_status: 'inválida' };
 }
 
+
+function normalizeSimNao(v) {
+  if (v === true || v === 1) return { disponivel: true, valor: true };
+  if (v === false || v === 0) return { disponivel: true, valor: false };
+  const raw = String(v ?? '').trim();
+  if (!raw) return { disponivel: false, valor: null };
+  const n = normalizeKey(raw);
+  if (/^(nao|não|n|no|false|falso|0|negativo)$/.test(n) || n.includes('nao utiliza') || n.includes('nao usa') || n.includes('não utiliza') || n.includes('não usa') || n.includes('sem vale')) return { disponivel: true, valor: false };
+  if (/^(sim|s|yes|y|true|verdadeiro|1|positivo)$/.test(n) || n.includes('utiliza') || n.includes('usa') || n.includes('possui')) return { disponivel: true, valor: true };
+  return { disponivel: true, valor: null };
+}
+
+function normalizePercentual(v) {
+  const raw = String(v ?? '').trim();
+  if (!raw) return null;
+  const match = raw.replace(',', '.').match(/-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const n = Number(match[0]);
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.min(100, n));
+}
+
+function formatPercentual(valor) {
+  if (typeof valor !== 'number' || !Number.isFinite(valor)) return '';
+  const arredondado = Math.round(valor * 10) / 10;
+  return Number.isInteger(arredondado) ? String(arredondado) : String(arredondado).replace('.', ',');
+}
+
 function modeValue(rows, field) {
   const counts = new Map();
   rows.forEach(r => {
@@ -29961,6 +30080,9 @@ function normalizeRow(row, empresa, dreFromSheet, sheetName, rowNum, fileName, m
   const estadoCivil = normalizeEstadoCivil(getVal(row, idx, COLUMN_ALIASES.estado_civil));
   const escolaridade = normalizeEscolaridade(getVal(row, idx, COLUMN_ALIASES.escolaridade));
   const filhosInfo = normalizeFilhos(getVal(row, idx, COLUMN_ALIASES.quantidade_filhos));
+  const valeTransporteInfo = normalizeSimNao(getVal(row, idx, COLUMN_ALIASES.vale_transporte));
+  const integracaoInfo = normalizeSimNao(getVal(row, idx, COLUMN_ALIASES.integracao));
+  const percentualIntegracao = normalizePercentual(getVal(row, idx, COLUMN_ALIASES.percentual_integracao));
 
   if (!nomeInterno && !endereco && !unidade && !dreText && !empresaPlanilha) return null;
 
@@ -29997,6 +30119,11 @@ function normalizeRow(row, empresa, dreFromSheet, sheetName, rowNum, fileName, m
     escolaridade: escolaridade,
     quantidade_filhos: filhosInfo.quantidade_filhos,
     quantidade_filhos_status: filhosInfo.filhos_status,
+    vale_transporte_disponivel: valeTransporteInfo.disponivel,
+    utiliza_vale_transporte: valeTransporteInfo.valor,
+    integracao_disponivel: integracaoInfo.disponivel || percentualIntegracao !== null,
+    utiliza_integracao: integracaoInfo.valor,
+    percentual_integracao: percentualIntegracao,
     endereco_residencial_interno_nao_exibir: endereco,
     endereco_residencial_normalizado_interno_nao_exibir: endereco,
     bairro: bairro || SAFE_NOT_IDENTIFIED,
@@ -30924,8 +31051,58 @@ function updateCharts() {
   if (dreDistMedia.length) chartDistDreInst = new Chart(document.getElementById('chartDistDre'), { type: 'bar', data: { labels: dreDistMedia.map(([k]) => DRE_SEDES[k]?.sigla || k), datasets: [{ label: 'Dist. média residência → unidade (km)', data: dreDistMedia.map(([,v]) => v), backgroundColor: dreDistMedia.map(([k]) => DRE_SEDES[k]?.cor || '#64748b') }] }, options: { ...CHART_OPTS, indexAxis: 'y', plugins: { legend: { display: false } } } });
 }
 
+
+function updateValeTransporteInfo() {
+  const el = document.getElementById('valeTransporteInfo');
+  if (!el) return;
+  const rows = filteredData.map(r => syncExpectedDataShape(r)).filter(Boolean);
+  const totalCozinheiras = rows.length;
+  const vtInformado = rows.filter(r => r.vale_transporte_disponivel && typeof r.utiliza_vale_transporte === 'boolean');
+
+  if (!totalCozinheiras || !vtInformado.length) {
+    el.innerHTML = '<div class="vt-alert">Informação sobre vale-transporte não disponível na base enviada.</div>';
+    return;
+  }
+
+  const qtdUsamVT = vtInformado.filter(r => r.utiliza_vale_transporte === true).length;
+  const percentualUsamVT = totalCozinheiras ? (qtdUsamVT / totalCozinheiras) * 100 : 0;
+  const usamVT = vtInformado.filter(r => r.utiliza_vale_transporte === true);
+  const integracaoInformada = usamVT.filter(r => r.integracao_disponivel && typeof r.utiliza_integracao === 'boolean');
+  const qtdUsamIntegracao = integracaoInformada.filter(r => r.utiliza_integracao === true).length;
+  const integracaoDisponivel = integracaoInformada.length > 0;
+  const percentualIntegracaoEntreVT = integracaoDisponivel && qtdUsamVT ? (qtdUsamIntegracao / qtdUsamVT) * 100 : 0;
+
+  const integracaoTexto = qtdUsamVT === 0 ? 'Não se aplica' : (integracaoDisponivel ? `${formatPercentual(percentualIntegracaoEntreVT)}%` : 'Não disponível');
+  const integracaoSub = qtdUsamVT === 0 ? 'sem cozinheiras com VT' : (integracaoDisponivel ? 'entre quem utiliza vale-transporte' : 'informação sobre integração não disponível');
+  const integracaoBarra = qtdUsamVT === 0 || !integracaoDisponivel ? 0 : percentualIntegracaoEntreVT;
+
+  el.innerHTML = `
+    <div class="vt-badge">🚌 Vale-transporte</div>
+    <div class="vt-summary-grid">
+      <div class="vt-metric-card">
+        <div class="vt-metric-label">👩‍🍳 Quantidade</div>
+        <div class="vt-metric-value">${qtdUsamVT}</div>
+        <div class="vt-metric-sub">de ${totalCozinheiras} cozinheiras</div>
+      </div>
+      <div class="vt-metric-card">
+        <div class="vt-metric-label">📊 Percentual VT</div>
+        <div class="vt-metric-value">${formatPercentual(percentualUsamVT)}%</div>
+        <div class="vt-progress"><div class="vt-progress-fill" style="width:${Math.max(0, Math.min(100, percentualUsamVT))}%"></div></div>
+      </div>
+      <div class="vt-metric-card full">
+        <div class="vt-metric-label">🔁 Integração entre quem usa VT</div>
+        <div class="vt-metric-value">${integracaoTexto}</div>
+        <div class="vt-metric-sub">${integracaoSub}</div>
+        <div class="vt-progress"><div class="vt-progress-fill" style="width:${Math.max(0, Math.min(100, integracaoBarra))}%"></div></div>
+      </div>
+    </div>
+    ${qtdUsamVT > 0 && !integracaoDisponivel ? '<div class="vt-alert">Informação sobre integração não disponível na base enviada.</div>' : ''}
+  `;
+}
+
 function updateSidebar() {
   renderEscolasDiagnostico();
+  updateValeTransporteInfo();
   const bairroCounts = {}; filteredData.forEach(r => { if (r.bairro && r.bairro !== SAFE_NOT_IDENTIFIED) bairroCounts[r.bairro] = (bairroCounts[r.bairro] || 0) + 1; });
   const top = Object.entries(bairroCounts).sort((a,b) => b[1]-a[1]).slice(0,10); const maxB = top[0]?.[1] || 1;
   document.getElementById('topBairros').innerHTML = top.length ? top.map(([b,n]) => `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>${escHtml(b)}</span><span style="color:var(--text2)">${n}</span></div><div class="dist-bar" style="background:var(--border)"><div class="dist-bar-fill" style="width:${Math.round(n/maxB*100)}%;background:var(--accent)"></div></div></div>`).join('') : '<div class="empty-state" style="padding:20px 0"><p>Sem dados</p></div>';
